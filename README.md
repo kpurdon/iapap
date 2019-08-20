@@ -1,3 +1,5 @@
+![Docker Pulls](https://img.shields.io/docker/pulls/kpurdon/iapap.svg)
+
 iapap
 -----
 
