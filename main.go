@@ -13,9 +13,9 @@ import (
 )
 
 func main() {
-	port := flag.String("--port", "8000", "port to listen on")
-	target := flag.String("--target", "http://localhost:8001", "target host")
-	audience := flag.String("--jwt-audience", "/projects/PROJECT_NUMBER/global/backendServices/SERVICE_ID", "the signed header jwt audience from cloud iap")
+	port := flag.String("port", "8000", "port to listen on")
+	target := flag.String("target", "http://localhost:8001", "target host")
+	audience := flag.String("jwt-audience", "/projects/PROJECT_NUMBER/global/backendServices/SERVICE_ID", "the signed header jwt audience from cloud iap")
 	flag.Parse()
 
 	targetURL, err := url.Parse(*target)
