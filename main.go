@@ -20,8 +20,14 @@ func main() {
 		log.Fatal("target %q is an invalid url: %s", *target, err)
 	}
 
-	// TODO: configure liveness/readiness probes
-
+	http.HandleFunc("/liveness", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+	http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: check if target is available
+		w.WriteHeader(http.StatusOK)
+	})
 	http.Handle("/", auth(httputil.NewSingleHostReverseProxy(targetURL), *audience))
+
 	log.Fatal(http.ListenAndServe(net.JoinHostPort("", *port), nil))
 }
