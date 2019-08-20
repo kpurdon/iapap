@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 func main() {
@@ -20,14 +23,19 @@ func main() {
 		log.Fatal("target %q is an invalid url: %s", *target, err)
 	}
 
-	http.HandleFunc("/liveness", func(w http.ResponseWriter, r *http.Request) {
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+
+	r.Get("/liveness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	http.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/readiness", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: check if target is available
 		w.WriteHeader(http.StatusOK)
 	})
-	http.Handle("/", auth(httputil.NewSingleHostReverseProxy(targetURL), *audience))
+	r.Handle("/", auth(httputil.NewSingleHostReverseProxy(targetURL), *audience))
 
-	log.Fatal(http.ListenAndServe(net.JoinHostPort("", *port), nil))
+	addr := net.JoinHostPort("", *port)
+	log.Printf("iapap listening on %s", addr)
+	log.Fatal(http.ListenAndServe(addr, r))
 }
