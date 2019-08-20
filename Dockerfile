@@ -14,4 +14,4 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /src/iapap .
 
 FROM alpine:latest
 COPY --from=builder /src/iapap .
-CMD ./iapap
+ENTRYPOINT ./iapap
