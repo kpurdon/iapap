@@ -52,7 +52,7 @@ func main() {
 		// TODO: check if target is available
 		w.WriteHeader(http.StatusOK)
 	})
-	r.Handle("/", auth(httputil.NewSingleHostReverseProxy(targetURL), audience))
+	r.Handle("/*", auth(httputil.NewSingleHostReverseProxy(targetURL), audience))
 
 	addr := net.JoinHostPort("", port)
 	log.Printf("iapap listening on %s", addr)
