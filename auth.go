@@ -63,8 +63,8 @@ func tokenKeyFn(token *jwt.Token) (interface{}, error) {
 		return nil, errors.New("token public key claim does not match any google public key claims")
 	}
 
-	// validate that the token was signed by the google private key corresponding to the public key
-	key, err := jwt.ParseECPrivateKeyFromPEM([]byte(publicKey))
+	// verify the signature of the public key
+	key, err := jwt.ParseECPublicKeyFromPEM([]byte(publicKey))
 	if err != nil {
 		return nil, err
 	}
