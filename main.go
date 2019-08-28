@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	stdlog "log"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	log "github.com/sirupsen/logrus"
 )
 
 func getEnv(name string, defaultValue string) string {
@@ -24,9 +25,17 @@ func getEnv(name string, defaultValue string) string {
 }
 
 func main() {
+	logLevel := getEnv("IAPAP_LOG_LEVEL", "INFO")
 	port := getEnv("IAPAP_PORT", "8000")
 	target := getEnv("IAPAP_TARGET", "http://localhost:8001")
 	audience := getEnv("IAPAP_AUDIENCE", "")
+
+	l, err := log.ParseLevel(logLevel)
+	if err != nil {
+		log.Fatalf("%+v", err)
+	}
+	log.SetLevel(l)
+	stdlog.SetOutput(log.StandardLogger().Writer())
 
 	targetURL, err := url.Parse(target)
 	if err != nil {
