@@ -13,5 +13,6 @@ WORKDIR /src
 RUN CGO_ENABLED=0 GOOS=linux go build -o /src/iapap .
 
 FROM alpine:latest
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 COPY --from=builder /src/iapap .
 ENTRYPOINT ./iapap
