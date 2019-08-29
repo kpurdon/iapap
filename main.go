@@ -7,6 +7,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -29,6 +30,7 @@ func main() {
 	port := getEnv("IAPAP_PORT", "8000")
 	target := getEnv("IAPAP_TARGET", "http://localhost:8001")
 	audience := getEnv("IAPAP_AUDIENCE", "")
+	endpointWhitelist := getEnv("IAPAP_ENDPOINT_WHITELIST", "")
 
 	l, err := log.ParseLevel(logLevel)
 	if err != nil {
@@ -45,16 +47,29 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Get("/liveness", func(w http.ResponseWriter, r *http.Request) {
+	// provide healthcheck endpoints, use _* to avoid common whitelisted endpoints
+	r.Get("/_liveness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	r.Get("/readiness", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/_readiness", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: check if target is available
 		w.WriteHeader(http.StatusOK)
 	})
-	r.Handle("/*", auth(httputil.NewSingleHostReverseProxy(targetURL), audience))
+
+	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+
+	// for all whitelisted endpoints provide a direct proxy
+	for _, e := range strings.Split(endpointWhitelist, ",") {
+		if !strings.HasPrefix(e, "/") {
+			log.Fatalf("whitelisted endpoint %q does not begin with a /", e)
+		}
+		r.Handle(e, proxy)
+	}
+
+	// for all other endpoints, provide an authenticated proxy
+	r.Handle("/*", auth(proxy, audience))
 
 	addr := net.JoinHostPort("", port)
-	log.Printf("iapap listening on %s", addr)
+	log.Infof("iapap listening on %s", addr)
 	log.Fatal(http.ListenAndServe(addr, r))
 }
