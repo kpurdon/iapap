@@ -1,4 +1,5 @@
-![Docker Pulls](https://img.shields.io/docker/pulls/kpurdon/iapap.svg)
+[![Docker Pulls](https://img.shields.io/docker/pulls/kpurdon/iapap.svg)](https://hub.docker.com/r/kpurdon/iapap)
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/kpurdon/iapap?sort=semver)
 
 iapap
 -----
