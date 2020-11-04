@@ -5,6 +5,6 @@ go 1.12
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 )
