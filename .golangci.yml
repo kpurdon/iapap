@@ -1,0 +1,21 @@
+linters-settings:
+  govet:
+    check-shadowing: true
+  misspell:
+    locale: US
+
+linters:
+  enable-all: true
+  disable:
+    - gofumpt
+    - godox
+    - goerr113
+    - lll
+    - gochecknoglobals
+    - wsl
+    - gomnd
+    - nlreturn
+
+# dont use the default exclusions
+issues:
+  exclude-use-default: false

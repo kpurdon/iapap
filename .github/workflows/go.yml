@@ -1,0 +1,26 @@
+name: go
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.32
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - uses: codecov/codecov-action@v1
+        with:
+          file: coverage.txt
+          fail_ci_if_error: true
