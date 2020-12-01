@@ -10,7 +10,7 @@ RUN go mod download
 # go build layer
 COPY . /src
 WORKDIR /src
-RUN CGO_ENABLED=0 GOOS=linux go build -o /src/iapap .
+RUN CGO_ENABLED=0 GOOS=linux go build -o /src/iapap ./cmd/iapap/...
 
 FROM alpine:latest
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
