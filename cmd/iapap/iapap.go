@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/kpurdon/iapap/pkg/iapap"
 )
 
@@ -34,11 +36,14 @@ func main() {
 		log.Panicf("target %q is an invalid url: %s", target, err)
 	}
 
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+
 	// provide healthcheck endpoints, use _* to avoid common whitelisted endpoints
-	http.HandleFunc("/_liveness", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/_liveness", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	http.HandleFunc("/_readiness", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/_readiness", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: check if target is available
 		w.WriteHeader(http.StatusOK)
 	})
@@ -50,13 +55,13 @@ func main() {
 		if !strings.HasPrefix(e, "/") {
 			log.Panicf("whitelisted endpoint %q does not begin with a /", e)
 		}
-		http.Handle(e, proxy)
+		r.Handle(e, proxy)
 	}
 
 	// for all other endpoints, provide an authenticated proxy
-	http.Handle("/*", iapap.NewVerifier(audience).Apply(proxy))
+	r.Handle("/*", iapap.NewVerifier(audience).Apply(proxy))
 
 	addr := net.JoinHostPort("", port)
 	log.Printf("iapap listening on %s", addr)
-	log.Panic(http.ListenAndServe(addr, nil))
+	log.Panic(http.ListenAndServe(addr, r))
 }
