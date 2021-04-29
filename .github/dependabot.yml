@@ -1,0 +1,29 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "12:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/go-chi/chi
+    versions:
+    - 1.5.1
+    - 1.5.2
+    - 1.5.3
+    - 1.5.4
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "12:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: golang
+    versions:
+    - 1.15.7
+    - 1.15.8
+    - 1.16.0
+    - 1.16.1
+    - 1.16.2
