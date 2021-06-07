@@ -1,4 +1,4 @@
-FROM golang:1.16.3 as builder
+FROM golang:1.16.5 as builder
 ENV GO111MODULE=on
 
 # go.mod dependencies layer
